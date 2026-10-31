@@ -121,6 +121,20 @@ So a component doc either:
 Both are first-class. A component without code is not a placeholder for one
 with code.
 
+### Contracts attach to the element they constrain
+
+A contract belongs in a doc comment on the specific method or entity it
+constrains, wherever there is one to attach it to. That is the default, not one
+of two equal options.
+
+Prose in the component doc is the fallback, for when it cannot attach: the
+component has no source, or the contract constrains the component as a whole
+rather than any single element.
+
+A contract written in prose because there was no code yet moves into a doc
+comment once the code exists. Leaving it behind creates a second place to look,
+and then a second place to drift.
+
 ## What "surface as a diff" means here
 
 Reviewed material is owned code plus the comprehension structures, so the diff
