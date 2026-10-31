@@ -70,7 +70,22 @@ An API expresses more than its principal signature. It carries contracts: the
 properties its clients need to be able to rely on.
 
 Write a contract as a **short, atomic statement** — one property per statement.
-Group the statements by concern.
+
+An element usually carries several. Group them by concern inside that element's
+doc comment. The grouping is local to the element; it is not an index of every
+contract in the project.
+
+```ts
+/**
+ * <concern>:
+ * - <one atomic property>
+ * - <another atomic property>
+ *
+ * <another concern>:
+ * - <one atomic property>
+ */
+someElement(...): Result
+```
 
 ### 4. Critical inputs and outputs
 
