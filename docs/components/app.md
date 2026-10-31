@@ -24,11 +24,53 @@ surface is the product itself rather than an exported symbol.
 
 ## API
 
-Not specified yet.
+The clients of this component are players and preset authors, so its API is the
+set of controls they have. Expressed schematically:
+
+```ts
+type FilterPreset    = { conditions: FilterCondition[] }
+type SmartPreset     = { preset: FilterPreset; when: PlayerPredicate }
+type PlayerState     = { stashes: PlayerStashesState; custom: PlayerCustomState }
+type PlayerPredicate = (state: PlayerState) => boolean
+
+// the filter being governed
+selectBaseFilter(path: FilterPath): void
+writeComposedFilter(): void
+
+// presets — applied means the blocks are physically in the filter
+apply(preset: FilterPreset): void
+unapply(preset: FilterPreset): void
+explain(preset: FilterPreset): Explanation
+
+// smart presets — enabled means the predicate drives the applied state
+enable(smart: SmartPreset): void
+disable(smart: SmartPreset): void
+
+// player state
+refreshStashes(): PlayerStashesState
+declareCustomState(key, prompt): void
+setCustomStateValue(key, value): void
+
+// insight
+matchItem(item: Item, filter: LootFilter): MatchResult
+```
+
+The two axes are independent, and conflating them is the easy mistake.
+
+**Applied or unapplied** is physical, and belongs to every preset. Applied means
+the preset's blocks are written into the filter file.
+
+**Enabled or disabled** belongs only to smart presets, and is about automation.
+Enabled means the predicate is evaluated against player state and the preset is
+applied or unapplied accordingly. An enabled smart preset is not thereby
+applied. The player does the enabling.
 
 ## Contracts
 
-Not specified yet.
+Not grouped by concern yet — no concern has been named that covers this one.
+
+- Disabling a smart preset freezes its preset in whatever applied state the
+  predicate last left it. Disabling stops the automation; it does not unapply.
 
 ## Critical inputs and outputs
 
