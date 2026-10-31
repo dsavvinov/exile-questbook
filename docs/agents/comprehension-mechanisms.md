@@ -123,17 +123,18 @@ with code.
 
 ### Contracts attach to the element they constrain
 
-A contract belongs in a doc comment on the specific method or entity it
-constrains, wherever there is one to attach it to. That is the default, not one
-of two equal options.
+A contract belongs in a doc comment on the method or entity it constrains.
 
-Prose in the component doc is the fallback, for when it cannot attach: the
-component has no source, or the contract constrains the component as a whole
-rather than any single element.
+That holds whether the element is real source or a schematic declaration in the
+component doc's code snippet. A component without source still writes its API
+out, so its contracts go on those declarations — not into a separate prose list
+further down the page.
 
-A contract written in prose because there was no code yet moves into a doc
-comment once the code exists. Leaving it behind creates a second place to look,
-and then a second place to drift.
+Prose is the fallback for one case only: a contract that constrains the
+component as a whole rather than any single element.
+
+A contract written on a schematic declaration moves onto the real one once the
+code exists, so there is never a second place to look.
 
 ## What "surface as a diff" means here
 

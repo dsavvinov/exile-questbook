@@ -49,6 +49,11 @@ explain(preset: FilterPreset): Explanation
 
 // smart presets — enabled means the predicate drives the applied state
 enable(smart: SmartPreset): void
+
+/**
+ * Freezes the preset in whatever applied state the predicate last left it.
+ * Disabling stops the automation; it does not unapply.
+ */
 disable(smart: SmartPreset): void
 
 // player state
@@ -77,10 +82,8 @@ applied. The player does the enabling.
 
 ## Contracts
 
-Not grouped by concern yet — no concern has been named that covers this one.
-
-- Disabling a smart preset freezes its preset in whatever applied state the
-  predicate last left it. Disabling stops the automation; it does not unapply.
+Attached to the declarations in the API above. None so far constrain the
+component as a whole.
 
 ## Critical inputs and outputs
 
