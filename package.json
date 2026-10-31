@@ -2,12 +2,17 @@
   "name": "exile-questbook",
   "private": true,
   "type": "module",
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "owned-diff": "bash scripts/owned-diff.sh"
+    "owned-diff": "bash scripts/owned-diff.sh",
+    "test": "vitest run"
   },
   "devDependencies": {
-    "typescript": "5.9.3"
+    "@types/node": "22.19.0",
+    "typescript": "5.9.3",
+    "vitest": "3.2.4"
   }
 }
