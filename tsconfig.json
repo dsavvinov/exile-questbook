@@ -1,4 +1,6 @@
 {
   "extends": "./tsconfig.base.json",
+  "//": "files:[] lets the config tolerate zero packages; include still picks them up once they exist.",
+  "files": [],
   "include": ["packages/*/owned/**/*.ts", "packages/*/src/**/*.ts"]
 }

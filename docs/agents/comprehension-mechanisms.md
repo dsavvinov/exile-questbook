@@ -90,29 +90,49 @@ comes from is not reviewable.
 
 ## Where these live
 
-Partly decided. See `component-layout.md` for the mechanics of a component
-package.
+| Structure | Location |
+| --- | --- |
+| Components | One Markdown file per component in `docs/components/` |
+| Contracts | Doc comments on the owned element they constrain |
+| Critical inputs and outputs | Beside the contracts, under the same rule |
+| Concerns | `docs/concerns.md` |
 
-- **Components** are packages under `packages/`. The tree is the package graph.
-- **The reviewed surface** of a component is its `owned/` directory. Everything
-  in `src/` is internal and needs no review.
-- **Contracts** and **critical inputs and outputs** do not have a decided home
-  yet. Do not pick one — ask.
-- **Concerns** do not have a decided home yet either.
+### Components are written, not derived from code
+
+The component doc comes first, and the code follows it where there is code at
+all.
+
+This is deliberate. A component can be drafted before it is built, and drafted
+incompletely — three contracts recorded and the fourth left unknown. That is the
+normal state, and the whole mechanism depends on it being allowed. Source code
+cannot be left incomplete in the same way; it compiles or it does not.
+
+Some components have no source counterpart at all. The application itself is
+one: its clients are the people using it, so its surface is the product rather
+than an exported symbol.
+
+So a component doc either:
+
+- **points at the source files that implement it**, in which case its contracts
+  and critical inputs and outputs live in doc comments on the owned elements; or
+- **has no source**, in which case it expresses its API schematically in code
+  snippets, and states its contracts and critical inputs and outputs in prose.
+
+Both are first-class. A component without code is not a placeholder for one
+with code.
 
 ## What "surface as a diff" means here
 
-Owned code is exactly the reviewed code, so the diff is `git diff` scoped to
-owned paths:
+Reviewed material is owned code plus the comprehension structures, so the diff
+is scoped to those paths:
 
 ```
-bash scripts/owned-diff.sh
+bash scripts/review-diff.sh
 ```
 
-It defaults to comparing against `origin/default`, which is the last reviewed
-and pushed state, so it shows everything still awaiting review. Pass a ref to
-compare against something else.
+It covers `*/owned/*`, `docs/components/` and `docs/concerns.md`. It defaults to
+comparing against `origin/default` — the last reviewed and pushed state — so it
+shows everything still awaiting review. Pass a ref to compare against something
+else.
 
-Because the rule is mechanical, it can be checked rather than remembered. A
-change under any `owned/` path needs review. A change confined to `src/` does
-not.
+Because the rule is mechanical, it can be checked rather than remembered.

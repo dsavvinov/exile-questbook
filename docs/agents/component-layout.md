@@ -1,7 +1,14 @@
 # Component layout
 
-Every component is a package under `packages/`, in the npm workspace defined by
-the root `package.json`.
+This doc covers components that have source code. Not all do — see
+`comprehension-mechanisms.md`, where the component doc in `docs/components/` is
+the primary record and the code is what implements it.
+
+A component with source is a package under `packages/`, in the npm workspace
+defined by the root `package.json`. Its component doc points at it.
+
+Contracts on a component with source live in doc comments on the owned element
+they constrain, not in the component doc.
 
 ## The two halves
 
