@@ -35,6 +35,9 @@ describe("round trip on awkward input", () => {
     "unknown keyword": "NextLeagueMechanic True\n",
     "unterminated quote": 'BaseType "Apex Cleaver\n',
     "comment only": "# just a comment\n",
+    "indented comment": "    # indented comment\n",
+    "malformed line": "123 this is not a statement\n",
+    "malformed inside a block": "Show\n    !!! junk\n    Rarity Rare\n",
     "odd spacing": "Show   \n   Rarity   >=   Rare   \n",
   };
 

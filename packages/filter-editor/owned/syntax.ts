@@ -41,13 +41,37 @@ export interface OperatorToken {
   readonly text: string;
 }
 
-/** A blank line, or a line holding only a comment. */
-export interface TriviaLine {
-  readonly kind: "trivia";
+/** A line holding nothing but whitespace. */
+export interface BlankLine {
+  readonly kind: "blank";
   /** The line's full text, without its terminator. */
   readonly raw: string;
   readonly eol: string;
 }
+
+/** A line holding nothing but a comment. */
+export interface CommentLine {
+  readonly kind: "comment";
+  readonly raw: string;
+  readonly eol: string;
+}
+
+/**
+ * A line that is neither blank, a comment, nor a statement.
+ *
+ * It is kept verbatim so the file can still be written back, but it is a
+ * distinct kind rather than a comment. A filter being hand-edited can hold a
+ * line like this, and treating it as a comment would mean reasoning about the
+ * player's filter as though the line were deliberately inert.
+ */
+export interface MalformedLine {
+  readonly kind: "malformed";
+  readonly raw: string;
+  readonly eol: string;
+}
+
+/** Lines that carry no statement and no meaning: blanks and comments. */
+export type TriviaLine = BlankLine | CommentLine;
 
 /**
  * A line of the form `indent keyword [operator] value* trailing`.
@@ -66,4 +90,4 @@ export interface StatementLine {
   readonly eol: string;
 }
 
-export type SyntaxLine = TriviaLine | StatementLine;
+export type SyntaxLine = TriviaLine | MalformedLine | StatementLine;

@@ -55,9 +55,14 @@ export function parseLines(lines: readonly SyntaxLine[]): LootFilter {
       open = { header: line, statements: [] };
       continue;
     }
-    if (line.kind === "trivia") {
+    if (line.kind === "blank" || line.kind === "comment") {
       if (open) open.statements.push({ kind: "trivia", syntax: line });
       else items.push({ kind: "trivia", syntax: line });
+      continue;
+    }
+    if (line.kind === "malformed") {
+      if (open) open.statements.push({ kind: "malformed", syntax: line });
+      else items.push({ kind: "malformed", syntax: line });
       continue;
     }
     const classified = classify(line);

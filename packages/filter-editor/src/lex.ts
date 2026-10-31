@@ -2,7 +2,6 @@ import type {
   OperatorToken,
   StatementLine,
   SyntaxLine,
-  TriviaLine,
   ValueToken,
 } from "../owned/syntax.ts";
 import { OPERATORS } from "../owned/keywords.ts";
@@ -93,10 +92,18 @@ function readValue(body: string, at: number): { value: ValueToken; next: number 
 
 function lexLine(raw: RawLine): SyntaxLine {
   const { body, eol } = raw;
-  const trivia = (): TriviaLine => ({ kind: "trivia", raw: body, eol });
+
+  if (body.trim() === "") return { kind: "blank", raw: body, eol };
 
   const head = INDENT_AND_KEYWORD.exec(body);
-  if (!head) return trivia();
+  if (!head) {
+    const firstChar = body.trimStart()[0];
+    // A line that is not a statement is either a comment or something the
+    // player did not mean to write. Those are different, and conflating them
+    // would hide the second behind the first.
+    const kind = firstChar === "#" ? "comment" : "malformed";
+    return { kind, raw: body, eol };
+  }
 
   const indent = head[1] ?? "";
   const keyword = head[2] ?? "";
@@ -129,7 +136,7 @@ function lexLine(raw: RawLine): SyntaxLine {
   return statement;
 }
 
-/** Lexes a filter into lines. Never throws: anything unrecognised is trivia. */
+/** Lexes a filter into lines. Never throws. */
 export function lex(text: string): SyntaxLine[] {
   return splitLines(text).map(lexLine);
 }

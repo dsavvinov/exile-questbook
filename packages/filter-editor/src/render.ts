@@ -3,8 +3,7 @@ import type { Block, FilterItem, LootFilter } from "../owned/model.ts";
 
 /** Writes one line back exactly as it was read. */
 export function renderLine(line: SyntaxLine): string {
-  if (line.kind === "trivia") return line.raw + line.eol;
-  return renderStatement(line);
+  return line.kind === "statement" ? renderStatement(line) : line.raw + line.eol;
 }
 
 export function renderStatement(s: StatementLine): string {

@@ -13,6 +13,9 @@ import { parseLines } from "../src/parse.ts";
 import { render as renderFilter } from "../src/render.ts";
 
 export type {
+  BlankLine,
+  CommentLine,
+  MalformedLine,
   OperatorToken,
   StatementLine,
   SyntaxLine,
@@ -29,6 +32,7 @@ export type {
   ContinueStatement,
   FilterItem,
   LootFilter,
+  Malformed,
   Trivia,
   UnknownStatement,
 } from "./model.ts";
@@ -49,10 +53,13 @@ export type {
 /**
  * Parses filter source into the typed model.
  *
- * - Never throws. There is no input that fails to parse: a line that is not a
- *   recognisable statement is kept as trivia, and a statement whose keyword is
- *   unknown is kept as an unknown statement. A filter editor that refuses to
+ * - Never throws, and never discards input. A filter editor that refuses to
  *   open next league's filter is useless, and new keywords arrive every league.
+ * - A statement whose keyword is outside the known vocabulary is kept as an
+ *   unknown statement, not an error.
+ * - A line that is neither blank, a comment, nor a statement is kept as a
+ *   malformed line. It is not silently filed as a comment: anything reasoning
+ *   about the filter can tell the two apart.
  * - `Import` is not resolved. It parses as an unknown statement and is written
  *   back untouched, so a filter that imports others is read as the single file
  *   it is, not as the filter the game would assemble.

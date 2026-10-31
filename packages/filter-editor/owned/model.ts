@@ -11,12 +11,29 @@
  * rather than a comparison against a string — are not built yet.
  */
 
-import type { StatementLine, SyntaxLine, TriviaLine } from "./syntax.ts";
+import type {
+  MalformedLine,
+  StatementLine,
+  SyntaxLine,
+  TriviaLine,
+} from "./syntax.ts";
 
 /** A blank or comment line, carried so the file can be written back intact. */
 export interface Trivia {
   readonly kind: "trivia";
   readonly syntax: TriviaLine;
+}
+
+/**
+ * A line that could not be read as a statement.
+ *
+ * Kept so the file writes back intact, and kept separate from trivia so that
+ * anything reasoning about the filter can tell a comment from a line the
+ * player probably did not mean to write.
+ */
+export interface Malformed {
+  readonly kind: "malformed";
+  readonly syntax: MalformedLine;
 }
 
 /** A condition: it decides which items the enclosing block matches. */
@@ -57,7 +74,8 @@ export type BlockStatement =
   | Action
   | ContinueStatement
   | UnknownStatement
-  | Trivia;
+  | Trivia
+  | Malformed;
 
 /** A `Show`, `Hide` or `Minimal` block, with everything it contains. */
 export interface Block {
@@ -71,11 +89,11 @@ export interface Block {
  * An item at the top level of the file: a block, or trivia before the first
  * block, or a statement that appears outside any block.
  */
-export type FilterItem = Block | Trivia | UnknownStatement;
+export type FilterItem = Block | Trivia | Malformed | UnknownStatement;
 
 /** A parsed loot filter. */
 export interface LootFilter {
   readonly items: readonly FilterItem[];
 }
 
-export type { SyntaxLine, StatementLine, TriviaLine };
+export type { SyntaxLine, StatementLine, TriviaLine, MalformedLine };
