@@ -2,9 +2,9 @@
 
 ## How to use this file
 
-This file is always in your context, so it carries only two things: the index of
-instruction docs, and writing style — the one rule that applies to every
-response, so it cannot live behind a lookup.
+This file is always in your context, so it carries only what bears on every
+response: the index of instruction docs, the rule for noticing new comprehension
+structure, and the writing style.
 
 Everything else is in `docs/agents/`. Read a doc when its "read when" condition
 matches your task, and leave the rest. If nothing covers what you are about to
@@ -17,6 +17,28 @@ do, say so rather than inventing a convention.
 | `docs/agents/process-rules.md` | Before pushing, opening a pull request, or taking any other action that leaves the local machine. |
 | `docs/agents/component-layout.md` | For any code edit. |
 | `docs/agents/comprehension-mechanisms.md` | For any code edit, and before proposing any design decision. |
+
+## After every request
+
+Maintaining the comprehension structures should not depend on the user asking
+for it. Having to say "now add a component" breaks the flow of working on code,
+so notice them yourself.
+
+Once you have acted on a request, look back at what the user said and ask
+whether it introduced a component, a contract, a critical input or output, or a
+concern. If it did, **suggest** the edit — show what you would add and where, in
+a few lines. Do not make it.
+
+Two limits on this.
+
+**It comes after the work, never instead of it.** If the request implies an
+implementation, implement it. The suggestion is a short addition at the end, not
+a detour, and not a reason to stop and ask before starting.
+
+**Suggest only what the user said.** This is not licence to infer structure from
+the code. `docs/agents/comprehension-mechanisms.md` forbids that, and it still
+holds. You are catching structure the user described in passing, not proposing
+structure you think the project ought to have.
 
 ---
 

@@ -22,6 +22,10 @@ Rules for adding a doc:
   weight.
 
 Inline exceptions in `AGENTS.md` are for guidance that applies unconditionally,
-to every task. The bar is high — writing style currently meets it, because it
-governs every piece of text an agent produces, so making it conditional would
-mean the agent sometimes writes badly by default.
+to every task. The bar is high, and two things currently clear it:
+
+- **Writing style**, because it governs every piece of text an agent produces,
+  so making it conditional would mean writing badly by default.
+- **Noticing new comprehension structure**, because it fires once per request
+  regardless of what the request is about. A trigger condition for it would have
+  to read "always", which is not a trigger.
