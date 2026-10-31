@@ -33,11 +33,12 @@ type SmartPreset     = { preset: FilterPreset; when: PlayerPredicate }
 type PlayerState     = { stashes: PlayerStashesState; custom: PlayerCustomState }
 type PlayerPredicate = (state: PlayerState) => boolean
 
-// the filter being governed
-selectBaseFilter(path: FilterPath): void
-writeComposedFilter(): void
+// the managed filter — the loot filter this app edits.
+// Null until the player picks one. They can switch it.
+managedFilter(): LootFilter | null
+setManagedFilter(filter: LootFilter): void
 
-// presets — applied means the blocks are physically in the filter
+// presets — applied means the blocks are physically in the managed filter
 apply(preset: FilterPreset): void
 unapply(preset: FilterPreset): void
 explain(preset: FilterPreset): Explanation
@@ -51,9 +52,14 @@ refreshStashes(): PlayerStashesState
 declareCustomState(key, prompt): void
 setCustomStateValue(key, value): void
 
-// insight
+// matching takes a filter and nothing else
 matchItem(item: Item, filter: LootFilter): MatchResult
 ```
+
+Player state builds the filter. Matching uses only the filter, and never player
+state: the loot filter has to work inside the game, which has no idea whether
+the player has completed uber lab. Once the filter is built, everything the
+match needs is in it.
 
 The two axes are independent, and conflating them is the easy mistake.
 
