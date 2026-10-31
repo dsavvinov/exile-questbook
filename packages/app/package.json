@@ -1,0 +1,12 @@
+{
+  "name": "@questbook/app",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./owned/index.ts",
+      "default": "./src/index.ts"
+    }
+  }
+}

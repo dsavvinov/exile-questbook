@@ -1,7 +1,11 @@
 # Exile Questbook
 
-A quest tracker for Path of Exile. Scope, stack and architecture are not settled
-yet — nothing has been built beyond this harness.
+A quest tracker for Path of Exile. Three parts: a loot filter editor driven by
+presets, a stash scanner that adjusts those presets to the player's situation,
+and an in-game overlay to manage them.
+
+Built as an Electron app in TypeScript. Each component is a package in an npm
+workspace, split into a reviewed `owned/` half and an internal `src/` half.
 
 ## How to use this file
 
@@ -18,6 +22,7 @@ do, say so rather than inventing a convention.
 | Doc | Read when |
 | --- | --- |
 | `docs/agents/process-rules.md` | Before pushing, opening a pull request, or taking any other action that leaves the local machine. |
+| `docs/agents/component-layout.md` | Before creating a component package, or when adding, moving or importing code across component boundaries. |
 | `docs/agents/comprehension-mechanisms.md` | Before adding or changing a component, an API, a contract, a critical input or output, or a concern — and before proposing any design decision. These changes need explicit user review. |
 
 ---

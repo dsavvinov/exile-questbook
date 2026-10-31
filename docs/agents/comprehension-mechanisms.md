@@ -88,8 +88,31 @@ Each one needs two parts:
 The explanation carries the meaning. A fixed value with no account of where it
 comes from is not reviewable.
 
-## Open: where these are stored
+## Where these live
 
-The storage format and location for the comprehension structures are not decided
-yet. This doc defines the mechanisms, not their file layout. Ask the user before
-choosing one.
+Partly decided. See `component-layout.md` for the mechanics of a component
+package.
+
+- **Components** are packages under `packages/`. The tree is the package graph.
+- **The reviewed surface** of a component is its `owned/` directory. Everything
+  in `src/` is internal and needs no review.
+- **Contracts** and **critical inputs and outputs** do not have a decided home
+  yet. Do not pick one — ask.
+- **Concerns** do not have a decided home yet either.
+
+## What "surface as a diff" means here
+
+Owned code is exactly the reviewed code, so the diff is `git diff` scoped to
+owned paths:
+
+```
+bash scripts/owned-diff.sh
+```
+
+It defaults to comparing against `origin/default`, which is the last reviewed
+and pushed state, so it shows everything still awaiting review. Pass a ref to
+compare against something else.
+
+Because the rule is mechanical, it can be checked rather than remembered. A
+change under any `owned/` path needs review. A change confined to `src/` does
+not.

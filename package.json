@@ -1,0 +1,13 @@
+{
+  "name": "exile-questbook",
+  "private": true,
+  "type": "module",
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "owned-diff": "bash scripts/owned-diff.sh"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}
