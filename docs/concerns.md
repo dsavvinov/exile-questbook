@@ -10,11 +10,14 @@ The stash API is rate limited. That bounds how often `PlayerStashesState` can be
 refreshed, and therefore how quickly a smart preset can react to the player's
 situation changing.
 
-## Preset import and export
+## Extensions
 
-Presets travel between players. A preset authored by one person has to be usable
-by another, which constrains what a preset may contain.
+Things come into the app from outside. Presets are the obvious case, but a
+preset drags along the custom state entries its predicate depends on, and more
+kinds will follow — so the concern is extensions in general, not preset import
+and export specifically.
 
 A player predicate therefore cannot be an arbitrary function; it has to be
-serialisable. A preset also has to declare the custom states its predicate
-depends on, so that the receiving player can be asked for them.
+serialisable. An extension also has to declare the custom state entries it
+needs, so the receiving player can be asked for them. That is what the `Custom`
+namespace in `PlayerState` is extensible for.

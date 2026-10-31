@@ -30,7 +30,11 @@ set of controls they have. Expressed schematically:
 ```ts
 type FilterPreset    = { conditions: FilterCondition[] }
 type SmartPreset     = { preset: FilterPreset; when: PlayerPredicate }
-type PlayerState     = { stashes: PlayerStashesState; custom: PlayerCustomState }
+type PlayerState     = {
+  stash:  Namespace   // what the player owns, written by StashScanner
+  custom: Namespace   // what the API cannot observe; extensions add entries here
+  config: Namespace   // the player's settings
+}
 type PlayerPredicate = (state: PlayerState) => boolean
 
 // the managed filter — the loot filter this app edits.
