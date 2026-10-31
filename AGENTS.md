@@ -17,6 +17,7 @@ do, say so rather than inventing a convention.
 
 | Doc | Read when |
 | --- | --- |
+| `docs/agents/process-rules.md` | Before pushing, opening a pull request, or taking any other action that leaves the local machine. |
 | `docs/agents/comprehension-mechanisms.md` | Before adding or changing a component, an API, a contract, a critical input or output, or a concern — and before proposing any design decision. These changes need explicit user review. |
 
 ---
