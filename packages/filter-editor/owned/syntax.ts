@@ -75,8 +75,6 @@ export interface MalformedLine {
   readonly eol: string;
 }
 
-
-
 /**
  * A line of the form `indent keyword [operator] value* trailing`.
  *
