@@ -157,9 +157,13 @@ export class LootFilter {
   /**
    * Writes the filter back out as source.
    *
-   * - A filter parsed and rendered without being edited produces output byte
-   *   for byte identical to the input, including whitespace, comments, quoting
-   *   style, line endings, and the presence or absence of a final newline.
+   * - A filter parsed and rendered without being edited produces output
+   *   identical to the input, including whitespace, comments, quoting style,
+   *   line endings, and the presence or absence of a final newline.
+   * - That identity is over text, not bytes. Bytes match only when the caller
+   *   decodes and re-encodes with the same encoding. The game accepts ANSI as
+   *   well as UTF-8, so a filter written as ANSI and read as UTF-8 comes back
+   *   changed. Choosing the encoding is the caller's job.
    */
   render(): string {
     let out = "";

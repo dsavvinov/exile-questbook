@@ -47,3 +47,33 @@ describe("round trip on awkward input", () => {
     });
   }
 });
+
+/**
+ * The game accepts ANSI as well as UTF-8, and the byte-level round trip holds
+ * only when the caller decodes with the encoding the file was written in.
+ */
+describe("encoding", () => {
+  // "Café Bruël" in Windows-1252: é is 0xE9, ë is 0xEB.
+  const cp1252 = Buffer.from([
+    ...Buffer.from('Show\n    BaseType "Caf', "ascii"), 0xe9,
+    ...Buffer.from(" Bru", "ascii"), 0xeb,
+    ...Buffer.from('"\n', "ascii"),
+  ]);
+
+  it("round trips byte for byte when decoded as latin1", () => {
+    const text = cp1252.toString("latin1");
+    expect(Buffer.from(LootFilter.parse(text).render(), "latin1")).toEqual(cp1252);
+  });
+
+  it("does not round trip byte for byte when decoded as utf8", () => {
+    const text = cp1252.toString("utf8");
+    expect(Buffer.from(LootFilter.parse(text).render(), "utf8")).not.toEqual(cp1252);
+  });
+
+  it("still round trips as text whatever the decoding", () => {
+    for (const enc of ["latin1", "utf8"] as const) {
+      const text = cp1252.toString(enc);
+      expect(LootFilter.parse(text).render()).toBe(text);
+    }
+  });
+});

@@ -17,6 +17,8 @@ Two layers:
   A line is blank, a comment, a statement, or malformed. There is no category
   of insignificant line: this app edits files other people wrote, so the shape
   of the file and the author's comments matter as much as the rules do.
+  The format is line-oriented — a condition cannot be split across lines — so
+  the lexer is too.
 - **The typed layer** (`owned/model.ts`) holds blocks and classified
   statements, each with a backref to the syntax line it came from.
 
@@ -50,6 +52,13 @@ Attached to the declarations in `owned/`.
 ## Critical inputs and outputs
 
 Not specified yet.
+
+## Encoding is the caller's problem
+
+The round trip is over text. Bytes match only when the file is decoded and
+re-encoded with the same encoding, and the game accepts ANSI as well as UTF-8.
+Whatever ends up reading filters from disk has to decide which, and reading an
+ANSI filter as UTF-8 corrupts it silently.
 
 ## Not built yet
 

@@ -14,6 +14,12 @@
  * shape, and this app edits files other people wrote. Each kind of line is
  * named for what it is.
  *
+ * A statement is a line. The format is line-oriented, not token-oriented: the
+ * community guide states that a block's conditions "must start on the next
+ * line", and that a block is a collection of lines ending at the next line
+ * containing Show or Hide. A condition split across several lines does not
+ * parse, in the game or here.
+ *
  * These are classes rather than interfaces so that building one is an import.
  * TypeScript is structural, so an object literal satisfies an interface without
  * ever referring to the module that declared it — which would let a component
