@@ -120,6 +120,13 @@ when what the reader needed was:
 > the user may be on a spotty WiFi connection. If we made it a blocking call,
 > the whole UI would appear frozen. So we do it in a background task.
 
+### Show the reader the thing itself
+
+Anything the user needs to see goes in your reply, as text. File contents,
+command output, diffs and search results are not visible to them because a tool
+produced them. Put them in the answer, and never write "see above" about
+something that only exists in a tool call.
+
 ### Before you send it
 
 - Count the concepts you introduced. Over six, cut scope — not words.
