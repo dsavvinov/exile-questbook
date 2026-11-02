@@ -160,9 +160,12 @@ is scoped to those paths:
 bash scripts/review-diff.sh
 ```
 
-It covers `*/owned/*`, `docs/components/` and `docs/concerns.md`. It defaults to
-comparing against `origin/default` — the last reviewed and pushed state — so it
-shows everything still awaiting review. Pass a ref to compare against something
-else.
+It covers `*/owned/*`, everything under `docs/`, and `AGENTS.md`. The
+instruction docs are reviewed for the same reason the component docs are: an
+agent acts on them, so a change to one changes how every later task is done.
+
+It defaults to comparing against `origin/default` — the last reviewed and
+pushed state — so it shows everything still awaiting review. Pass a ref to
+compare against something else.
 
 Because the rule is mechanical, it can be checked rather than remembered.

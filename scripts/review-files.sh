@@ -3,8 +3,9 @@
 #
 # Owned is the material that requires review:
 #   packages/*/owned/*   the reviewed half of a component
-#   docs/components/*    the component docs
-#   docs/concerns.md     the concerns
+#   docs/*               every doc: the comprehension structures and the
+#                        instructions an agent works from
+#   AGENTS.md, CLAUDE.md the always-loaded instructions
 # Everything else is unowned.
 #
 # The split is computed here rather than judged by eye. A model deciding which
@@ -23,8 +24,9 @@ git add --intent-to-add --all >/dev/null 2>&1 || true
 is_owned() {
   case "$1" in
     packages/*/owned/*) return 0 ;;
-    docs/components/*)  return 0 ;;
-    docs/concerns.md)   return 0 ;;
+    docs/*)             return 0 ;;
+    AGENTS.md)          return 0 ;;
+    CLAUDE.md)          return 0 ;;
     *)                  return 1 ;;
   esac
 }

@@ -9,7 +9,7 @@
 set -euo pipefail
 
 REF="${1:-origin/default}"
-PATHS=('*/owned/*' 'docs/components' 'docs/concerns.md')
+PATHS=('*/owned/*' 'docs' 'AGENTS.md' 'CLAUDE.md')
 
 # Register untracked files with the index so new files appear in the diff.
 # --intent-to-add records the path only; it stages no content.
