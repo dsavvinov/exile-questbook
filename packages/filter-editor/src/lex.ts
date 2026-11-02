@@ -1,9 +1,12 @@
-import type {
+import {
+  BlankLine,
+  CommentLine,
+  MalformedLine,
   OperatorToken,
   StatementLine,
-  SyntaxLine,
   ValueToken,
 } from "../owned/syntax.ts";
+import type { SyntaxLine } from "../owned/syntax.ts";
 import { OPERATORS } from "../owned/keywords.ts";
 
 interface RawLine {
@@ -41,18 +44,24 @@ function splitLines(text: string): RawLine[] {
 
 const INDENT_AND_KEYWORD = /^([ \t]*)([A-Za-z][A-Za-z0-9]*)/;
 
-function readOperator(body: string, at: number): { op: OperatorToken; next: number } | null {
+function readOperator(
+  body: string,
+  at: number,
+): { op: OperatorToken; next: number } | null {
   let i = at;
   while (i < body.length && (body[i] === " " || body[i] === "\t")) i++;
   for (const text of OPERATORS) {
     if (body.startsWith(text, i)) {
-      return { op: { ws: body.slice(at, i), text }, next: i + text.length };
+      return { op: new OperatorToken(body.slice(at, i), text), next: i + text.length };
     }
   }
   return null;
 }
 
-function readValue(body: string, at: number): { value: ValueToken; next: number } | null {
+function readValue(
+  body: string,
+  at: number,
+): { value: ValueToken; next: number } | null {
   let i = at;
   while (i < body.length && (body[i] === " " || body[i] === "\t")) i++;
   if (i >= body.length || body[i] === "#") return null;
@@ -62,47 +71,32 @@ function readValue(body: string, at: number): { value: ValueToken; next: number 
     const close = body.indexOf('"', i + 1);
     // An unterminated quote takes the rest of the line, so no input is dropped.
     if (close === -1) {
-      const value: ValueToken = {
-        ws,
-        openQuote: '"',
-        closeQuote: null,
-        text: body.slice(i + 1),
-      };
-      return { value, next: body.length };
+      return { value: new ValueToken(ws, '"', null, body.slice(i + 1)), next: body.length };
     }
-    const value: ValueToken = {
-      ws,
-      openQuote: '"',
-      closeQuote: '"',
-      text: body.slice(i + 1, close),
+    return {
+      value: new ValueToken(ws, '"', '"', body.slice(i + 1, close)),
+      next: close + 1,
     };
-    return { value, next: close + 1 };
   }
 
   let j = i;
   while (j < body.length && body[j] !== " " && body[j] !== "\t") j++;
-  const value: ValueToken = {
-    ws,
-    openQuote: null,
-    closeQuote: null,
-    text: body.slice(i, j),
-  };
-  return { value, next: j };
+  return { value: new ValueToken(ws, null, null, body.slice(i, j)), next: j };
 }
 
 function lexLine(raw: RawLine): SyntaxLine {
   const { body, eol } = raw;
 
-  if (body.trim() === "") return { kind: "blank", raw: body, eol };
+  if (body.trim() === "") return new BlankLine(body, eol);
 
   const head = INDENT_AND_KEYWORD.exec(body);
   if (!head) {
-    const firstChar = body.trimStart()[0];
     // A line that is not a statement is either a comment or something the
     // player did not mean to write. Those are different, and conflating them
     // would hide the second behind the first.
-    const kind = firstChar === "#" ? "comment" : "malformed";
-    return { kind, raw: body, eol };
+    return body.trimStart().startsWith("#")
+      ? new CommentLine(body, eol)
+      : new MalformedLine(body, eol);
   }
 
   const indent = head[1] ?? "";
@@ -124,16 +118,7 @@ function lexLine(raw: RawLine): SyntaxLine {
     at = v.next;
   }
 
-  const statement: StatementLine = {
-    kind: "statement",
-    indent,
-    keyword,
-    operator,
-    values,
-    trailing: body.slice(at),
-    eol,
-  };
-  return statement;
+  return new StatementLine(indent, keyword, operator, values, body.slice(at), eol);
 }
 
 /** Lexes a filter into lines. Never throws. */

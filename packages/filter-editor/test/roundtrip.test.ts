@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { parse, render } from "@questbook/filter-editor";
+import { LootFilter } from "@questbook/filter-editor";
 
 const TESTDATA = join(import.meta.dirname, "..", "testdata");
 const filters = readdirSync(TESTDATA).filter((f) => f.endsWith(".filter"));
@@ -14,7 +14,7 @@ describe("round trip", () => {
   for (const name of filters) {
     it(`re-emits ${name} byte for byte`, () => {
       const source = readFileSync(join(TESTDATA, name), "utf8");
-      expect(render(parse(source))).toBe(source);
+      expect(LootFilter.parse(source).render()).toBe(source);
     });
   }
 });
@@ -43,7 +43,7 @@ describe("round trip on awkward input", () => {
 
   for (const [label, source] of Object.entries(cases)) {
     it(label, () => {
-      expect(render(parse(source))).toBe(source);
+      expect(LootFilter.parse(source).render()).toBe(source);
     });
   }
 });

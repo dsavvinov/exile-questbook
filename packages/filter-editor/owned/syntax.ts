@@ -13,47 +13,73 @@
  * no instruction to the game, but they carry the author's intent and the file's
  * shape, and this app edits files other people wrote. Each kind of line is
  * named for what it is.
+ *
+ * These are classes rather than interfaces so that building one is an import.
+ * TypeScript is structural, so an object literal satisfies an interface without
+ * ever referring to the module that declared it — which would let a component
+ * depend on this one while the dependency graph stayed empty.
  */
 
 /**
  * A value token exactly as it appeared.
  *
- * The opening and closing quotes are recorded separately rather than as one
+ * The opening and closing quotes are kept separately rather than as one
  * `quoted` flag, because a filter being hand-edited can hold an unterminated
  * quote, and a single flag cannot tell that from a closed pair. Writing such a
  * line back has to leave it unterminated rather than silently repairing it.
  */
-export interface ValueToken {
-  /** Whitespace preceding the token, verbatim. */
-  readonly ws: string;
-  /** The quote that opened the token, or null if it was bare. */
-  readonly openQuote: '"' | null;
-  /** The quote that closed it, or null if the source left it open. */
-  readonly closeQuote: '"' | null;
-  /** The token text, without any surrounding quotes. */
-  readonly text: string;
+export class ValueToken {
+  constructor(
+    /** Whitespace preceding the token, verbatim. */
+    readonly ws: string,
+    /** The quote that opened the token, or null if it was bare. */
+    readonly openQuote: '"' | null,
+    /** The quote that closed it, or null if the source left it open. */
+    readonly closeQuote: '"' | null,
+    /** The token text, without any surrounding quotes. */
+    readonly text: string,
+  ) {}
+
+  render(): string {
+    return this.ws + (this.openQuote ?? "") + this.text + (this.closeQuote ?? "");
+  }
 }
 
 /** An operator exactly as it appeared. */
-export interface OperatorToken {
-  /** Whitespace preceding the operator, verbatim. */
-  readonly ws: string;
-  readonly text: string;
+export class OperatorToken {
+  constructor(
+    /** Whitespace preceding the operator, verbatim. */
+    readonly ws: string,
+    readonly text: string,
+  ) {}
+
+  render(): string {
+    return this.ws + this.text;
+  }
 }
 
 /** A line holding nothing but whitespace. */
-export interface BlankLine {
-  readonly kind: "blank";
-  /** The line's full text, without its terminator. */
-  readonly raw: string;
-  readonly eol: string;
+export class BlankLine {
+  readonly kind: "blank" = "blank";
+  constructor(
+    /** The line's full text, without its terminator. */
+    readonly raw: string,
+    readonly eol: string,
+  ) {}
+
+  render(): string {
+    return this.raw + this.eol;
+  }
 }
 
 /** A line holding nothing but a comment. */
-export interface CommentLine {
-  readonly kind: "comment";
-  readonly raw: string;
-  readonly eol: string;
+export class CommentLine {
+  readonly kind: "comment" = "comment";
+  constructor(readonly raw: string, readonly eol: string) {}
+
+  render(): string {
+    return this.raw + this.eol;
+  }
 }
 
 /**
@@ -64,10 +90,13 @@ export interface CommentLine {
  * line like this, and treating it as a comment would mean reasoning about the
  * player's filter as though the line were deliberately inert.
  */
-export interface MalformedLine {
-  readonly kind: "malformed";
-  readonly raw: string;
-  readonly eol: string;
+export class MalformedLine {
+  readonly kind: "malformed" = "malformed";
+  constructor(readonly raw: string, readonly eol: string) {}
+
+  render(): string {
+    return this.raw + this.eol;
+  }
 }
 
 /**
@@ -76,15 +105,24 @@ export interface MalformedLine {
  * The operator is optional in the source and its absence is meaningful, so a
  * missing operator and an explicit `==` are different nodes.
  */
-export interface StatementLine {
-  readonly kind: "statement";
-  readonly indent: string;
-  readonly keyword: string;
-  readonly operator: OperatorToken | null;
-  readonly values: readonly ValueToken[];
-  /** Everything after the last value: whitespace, and any trailing comment. */
-  readonly trailing: string;
-  readonly eol: string;
+export class StatementLine {
+  readonly kind: "statement" = "statement";
+  constructor(
+    readonly indent: string,
+    readonly keyword: string,
+    readonly operator: OperatorToken | null,
+    readonly values: readonly ValueToken[],
+    /** Everything after the last value: whitespace, and any trailing comment. */
+    readonly trailing: string,
+    readonly eol: string,
+  ) {}
+
+  render(): string {
+    let out = this.indent + this.keyword;
+    if (this.operator !== null) out += this.operator.render();
+    for (const value of this.values) out += value.render();
+    return out + this.trailing + this.eol;
+  }
 }
 
 export type SyntaxLine =

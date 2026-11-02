@@ -11,6 +11,7 @@
  * rather than a comparison against a string — are not built yet.
  */
 
+import { parseFilter } from "../src/parse.ts";
 import type {
   BlankLine,
   CommentLine,
@@ -20,15 +21,21 @@ import type {
 } from "./syntax.ts";
 
 /** A line holding nothing but whitespace. */
-export interface Blank {
-  readonly kind: "blank";
-  readonly syntax: BlankLine;
+export class Blank {
+  readonly kind: "blank" = "blank";
+  constructor(readonly syntax: BlankLine) {}
+  render(): string {
+    return this.syntax.render();
+  }
 }
 
 /** A line holding nothing but a comment. */
-export interface Comment {
-  readonly kind: "comment";
-  readonly syntax: CommentLine;
+export class Comment {
+  readonly kind: "comment" = "comment";
+  constructor(readonly syntax: CommentLine) {}
+  render(): string {
+    return this.syntax.render();
+  }
 }
 
 /**
@@ -38,29 +45,39 @@ export interface Comment {
  * anything reasoning about the filter can tell a comment from a line the
  * player probably did not mean to write.
  */
-export interface Malformed {
-  readonly kind: "malformed";
-  readonly syntax: MalformedLine;
+export class Malformed {
+  readonly kind: "malformed" = "malformed";
+  constructor(readonly syntax: MalformedLine) {}
+  render(): string {
+    return this.syntax.render();
+  }
 }
 
 /** A condition: it decides which items the enclosing block matches. */
-export interface Condition {
-  readonly kind: "condition";
-  readonly keyword: string;
-  readonly syntax: StatementLine;
+export class Condition {
+  readonly kind: "condition" = "condition";
+  constructor(readonly keyword: string, readonly syntax: StatementLine) {}
+  render(): string {
+    return this.syntax.render();
+  }
 }
 
 /** An action: it decides what the player sees for a matched item. */
-export interface Action {
-  readonly kind: "action";
-  readonly keyword: string;
-  readonly syntax: StatementLine;
+export class Action {
+  readonly kind: "action" = "action";
+  constructor(readonly keyword: string, readonly syntax: StatementLine) {}
+  render(): string {
+    return this.syntax.render();
+  }
 }
 
 /** `Continue`: matching does not stop at this block. */
-export interface ContinueStatement {
-  readonly kind: "continue";
-  readonly syntax: StatementLine;
+export class ContinueStatement {
+  readonly kind: "continue" = "continue";
+  constructor(readonly syntax: StatementLine) {}
+  render(): string {
+    return this.syntax.render();
+  }
 }
 
 /**
@@ -70,10 +87,12 @@ export interface ContinueStatement {
  * one this build has never heard of is expected, and it has to survive being
  * read and written back.
  */
-export interface UnknownStatement {
-  readonly kind: "unknown";
-  readonly keyword: string;
-  readonly syntax: StatementLine;
+export class UnknownStatement {
+  readonly kind: "unknown" = "unknown";
+  constructor(readonly keyword: string, readonly syntax: StatementLine) {}
+  render(): string {
+    return this.syntax.render();
+  }
 }
 
 export type BlockStatement =
@@ -86,11 +105,19 @@ export type BlockStatement =
   | Malformed;
 
 /** A `Show`, `Hide` or `Minimal` block, with everything it contains. */
-export interface Block {
-  readonly kind: "block";
-  readonly blockKeyword: string;
-  readonly header: StatementLine;
-  readonly statements: readonly BlockStatement[];
+export class Block {
+  readonly kind: "block" = "block";
+  constructor(
+    readonly blockKeyword: string,
+    readonly header: StatementLine,
+    readonly statements: readonly BlockStatement[],
+  ) {}
+
+  render(): string {
+    let out = this.header.render();
+    for (const statement of this.statements) out += statement.render();
+    return out;
+  }
 }
 
 /**
@@ -105,8 +132,40 @@ export type FilterItem =
   | UnknownStatement;
 
 /** A parsed loot filter. */
-export interface LootFilter {
-  readonly items: readonly FilterItem[];
+export class LootFilter {
+  constructor(readonly items: readonly FilterItem[]) {}
+
+  /**
+   * Reads filter source.
+   *
+   * - Never throws, and never discards input. A filter editor that refuses to
+   *   open next league's filter is useless, and new keywords arrive every
+   *   league.
+   * - A statement whose keyword is outside the known vocabulary becomes an
+   *   `UnknownStatement`, not an error.
+   * - A line that is neither blank, a comment, nor a statement becomes a
+   *   `Malformed`. It is not filed as a comment: anything reasoning about the
+   *   filter can tell the two apart.
+   * - `Import` is not resolved. It becomes an `UnknownStatement` and is written
+   *   back untouched, so a filter that imports others is read as the single
+   *   file it is, not as the filter the game would assemble.
+   */
+  static parse(source: string): LootFilter {
+    return parseFilter(source);
+  }
+
+  /**
+   * Writes the filter back out as source.
+   *
+   * - A filter parsed and rendered without being edited produces output byte
+   *   for byte identical to the input, including whitespace, comments, quoting
+   *   style, line endings, and the presence or absence of a final newline.
+   */
+  render(): string {
+    let out = "";
+    for (const item of this.items) out += item.render();
+    return out;
+  }
 }
 
 export type { SyntaxLine, StatementLine, BlankLine, CommentLine, MalformedLine };

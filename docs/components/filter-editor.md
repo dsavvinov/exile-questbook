@@ -31,12 +31,17 @@ has to land on exactly the span it came from and leave the rest untouched.
 - `owned/syntax.ts` — the lossless layer.
 - `owned/model.ts` — the typed layer.
 - `owned/keywords.ts` — the vocabulary, from the official documentation.
-- `owned/index.ts` — `parse` and `render`.
-- `src/` — lexer, parser and renderer implementations.
+- `owned/index.ts` — the surface other components import.
+- `src/` — the lexer and the block grouper.
 
 ## API
 
-`owned/index.ts`.
+`owned/index.ts`. Start at `LootFilter.parse(source)` and `filter.render()`.
+
+Nodes are classes, not interfaces. TypeScript is structural, so a component
+could satisfy an interface declared here with an object literal and never
+import anything from this package — the typecheck would pass and the
+dependency graph would stay empty. A constructor makes the dependency real.
 
 ## Contracts
 

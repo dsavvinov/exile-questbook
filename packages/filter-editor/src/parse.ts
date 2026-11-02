@@ -1,10 +1,16 @@
-import type { SyntaxLine, StatementLine } from "../owned/syntax.ts";
-import type {
+import type { StatementLine, SyntaxLine } from "../owned/syntax.ts";
+import {
+  Action,
+  Blank,
   Block,
-  BlockStatement,
-  FilterItem,
+  Comment,
+  Condition,
+  ContinueStatement,
   LootFilter,
+  Malformed,
+  UnknownStatement,
 } from "../owned/model.ts";
+import type { BlockStatement, FilterItem } from "../owned/model.ts";
 import {
   ACTION_KEYWORDS,
   BLOCK_KEYWORDS,
@@ -18,10 +24,10 @@ const ACTIONS: ReadonlySet<string> = new Set(ACTION_KEYWORDS);
 
 function classify(line: StatementLine): BlockStatement {
   const k = line.keyword;
-  if (k === "Continue") return { kind: "continue", syntax: line };
-  if (CONDITIONS.has(k)) return { kind: "condition", keyword: k, syntax: line };
-  if (ACTIONS.has(k)) return { kind: "action", keyword: k, syntax: line };
-  return { kind: "unknown", keyword: k, syntax: line };
+  if (k === "Continue") return new ContinueStatement(line);
+  if (CONDITIONS.has(k)) return new Condition(k, line);
+  if (ACTIONS.has(k)) return new Action(k, line);
+  return new UnknownStatement(k, line);
 }
 
 /**
@@ -39,47 +45,48 @@ export function parseLines(lines: readonly SyntaxLine[]): LootFilter {
 
   const close = (): void => {
     if (!open) return;
-    const block: Block = {
-      kind: "block",
-      blockKeyword: open.header.keyword,
-      header: open.header,
-      statements: open.statements,
-    };
-    items.push(block);
+    items.push(new Block(open.header.keyword, open.header, open.statements));
     open = null;
   };
 
+  const place = (node: BlockStatement & FilterItem): void => {
+    if (open) open.statements.push(node);
+    else items.push(node);
+  };
+
   for (const line of lines) {
-    if (line.kind === "statement" && BLOCKS.has(line.keyword)) {
-      close();
-      open = { header: line, statements: [] };
-      continue;
+    switch (line.kind) {
+      case "statement":
+        if (BLOCKS.has(line.keyword)) {
+          close();
+          open = { header: line, statements: [] };
+        } else {
+          const node = classify(line);
+          if (open) open.statements.push(node);
+          else items.push(new UnknownStatement(line.keyword, line));
+        }
+        break;
+      case "blank":
+        place(new Blank(line));
+        break;
+      case "comment":
+        place(new Comment(line));
+        break;
+      case "malformed":
+        place(new Malformed(line));
+        break;
+      default: {
+        const unreachable: never = line;
+        throw new Error(`unhandled line kind: ${String(unreachable)}`);
+      }
     }
-    if (line.kind === "blank") {
-      if (open) open.statements.push({ kind: "blank", syntax: line });
-      else items.push({ kind: "blank", syntax: line });
-      continue;
-    }
-    if (line.kind === "comment") {
-      if (open) open.statements.push({ kind: "comment", syntax: line });
-      else items.push({ kind: "comment", syntax: line });
-      continue;
-    }
-    if (line.kind === "malformed") {
-      if (open) open.statements.push({ kind: "malformed", syntax: line });
-      else items.push({ kind: "malformed", syntax: line });
-      continue;
-    }
-    const classified = classify(line);
-    if (open) open.statements.push(classified);
-    else items.push({ kind: "unknown", keyword: line.keyword, syntax: line });
   }
   close();
 
-  return { items };
+  return new LootFilter(items);
 }
 
-/** Parses filter source into the typed model. Never throws. */
-export function parse(text: string): LootFilter {
-  return parseLines(lex(text));
+/** Reads filter source. Reached through `LootFilter.parse`. */
+export function parseFilter(source: string): LootFilter {
+  return parseLines(lex(source));
 }

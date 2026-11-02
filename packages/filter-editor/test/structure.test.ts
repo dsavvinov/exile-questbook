@@ -1,8 +1,8 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { parse } from "@questbook/filter-editor";
-import type { BlockStatement, LootFilter } from "@questbook/filter-editor";
+import { LootFilter } from "@questbook/filter-editor";
+import type { BlockStatement } from "@questbook/filter-editor";
 
 const TESTDATA = join(import.meta.dirname, "..", "testdata");
 const filters = readdirSync(TESTDATA).filter((f) => f.endsWith(".filter"));
@@ -51,7 +51,7 @@ function count(filter: LootFilter): Counts {
  */
 describe.each(filters)("%s", (name) => {
   const source = readFileSync(join(TESTDATA, name), "utf8");
-  const filter = parse(source);
+  const filter = LootFilter.parse(source);
   const c = count(filter);
 
   it("finds blocks", () => {
@@ -84,7 +84,7 @@ describe.each(filters)("%s", (name) => {
 
 it("the corpus covers actions and Continue somewhere", () => {
   const totals = filters
-    .map((n) => count(parse(readFileSync(join(TESTDATA, n), "utf8"))))
+    .map((n) => count(LootFilter.parse(readFileSync(join(TESTDATA, n), "utf8"))))
     .reduce((a, b) => ({ ...a, actions: a.actions + b.actions, continues: a.continues + b.continues }));
   expect(totals.actions).toBeGreaterThan(1000);
   expect(totals.continues).toBeGreaterThan(0);
@@ -93,7 +93,7 @@ it("the corpus covers actions and Continue somewhere", () => {
 describe("line classification", () => {
   const kindsOf = (source: string): string[] => {
     const out: string[] = [];
-    for (const item of parse(source).items) {
+    for (const item of LootFilter.parse(source).items) {
       if (item.kind === "block") {
         out.push("block");
         for (const s of item.statements) out.push(s.kind);
