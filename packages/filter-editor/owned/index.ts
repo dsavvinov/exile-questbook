@@ -19,7 +19,6 @@ export type {
   OperatorToken,
   StatementLine,
   SyntaxLine,
-  TriviaLine,
   ValueToken,
 } from "./syntax.ts";
 export { isQuoted } from "./syntax.ts";
@@ -30,10 +29,11 @@ export type {
   BlockStatement,
   Condition,
   ContinueStatement,
+  Blank,
+  Comment,
   FilterItem,
   LootFilter,
   Malformed,
-  Trivia,
   UnknownStatement,
 } from "./model.ts";
 
@@ -58,8 +58,8 @@ export type {
  * - A statement whose keyword is outside the known vocabulary is kept as an
  *   unknown statement, not an error.
  * - A line that is neither blank, a comment, nor a statement is kept as a
- *   malformed line. It is not silently filed as a comment: anything reasoning
- *   about the filter can tell the two apart.
+ *   malformed line. It is not filed as a comment: anything reasoning about the
+ *   filter can tell the two apart.
  * - `Import` is not resolved. It parses as an unknown statement and is written
  *   back untouched, so a filter that imports others is read as the single file
  *   it is, not as the filter the game would assemble.

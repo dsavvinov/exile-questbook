@@ -14,9 +14,9 @@ Two layers:
 
 - **The lossless layer** (`owned/syntax.ts`) holds every byte of the source —
   whitespace, comments, quoting style, line endings. Nothing is interpreted.
-  A line is blank, a comment, a statement, or malformed; the last is kept
-  verbatim but held apart from comments, so a line the player did not mean to
-  write is not read as one they inertly did.
+  A line is blank, a comment, a statement, or malformed. There is no category
+  of insignificant line: this app edits files other people wrote, so the shape
+  of the file and the author's comments matter as much as the rules do.
 - **The typed layer** (`owned/model.ts`) holds blocks and classified
   statements, each with a backref to the syntax line it came from.
 

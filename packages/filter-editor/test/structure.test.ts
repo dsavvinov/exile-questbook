@@ -12,7 +12,8 @@ interface Counts {
   conditions: number;
   actions: number;
   continues: number;
-  trivia: number;
+  blanks: number;
+  comments: number;
   malformed: number;
   unknown: number;
   unknownKeywords: Set<string>;
@@ -21,13 +22,14 @@ interface Counts {
 function count(filter: LootFilter): Counts {
   const c: Counts = {
     blocks: 0, conditions: 0, actions: 0, continues: 0,
-    trivia: 0, malformed: 0, unknown: 0, unknownKeywords: new Set(),
+    blanks: 0, comments: 0, malformed: 0, unknown: 0, unknownKeywords: new Set(),
   };
   const tally = (s: BlockStatement): void => {
     if (s.kind === "condition") c.conditions++;
     else if (s.kind === "action") c.actions++;
     else if (s.kind === "continue") c.continues++;
-    else if (s.kind === "trivia") c.trivia++;
+    else if (s.kind === "blank") c.blanks++;
+    else if (s.kind === "comment") c.comments++;
     else if (s.kind === "malformed") c.malformed++;
     else {
       c.unknown++;
@@ -67,7 +69,8 @@ describe.each(filters)("%s", (name) => {
       ? 0
       : source.split("\n").length - (source.endsWith("\n") ? 1 : 0);
     const statements = c.conditions + c.actions + c.continues + c.unknown;
-    expect(c.blocks + statements + c.trivia + c.malformed).toBe(lines);
+    const lineKinds = c.blanks + c.comments + c.malformed;
+    expect(c.blocks + statements + lineKinds).toBe(lines);
   });
 
   it("recognises every keyword the filter uses", () => {
@@ -100,12 +103,12 @@ describe("line classification", () => {
   };
 
   it("keeps a comment and a malformed line apart", () => {
-    expect(kindsOf("# a comment\n")).toEqual(["trivia"]);
+    expect(kindsOf("# a comment\n")).toEqual(["comment"]);
     expect(kindsOf("123 not a statement\n")).toEqual(["malformed"]);
   });
 
-  it("treats a blank line as trivia", () => {
-    expect(kindsOf("\n   \n")).toEqual(["trivia", "trivia"]);
+  it("names a whitespace-only line blank, not a comment", () => {
+    expect(kindsOf("\n   \n\t\n")).toEqual(["blank", "blank", "blank"]);
   });
 
   it("does not file junk inside a block as a comment", () => {

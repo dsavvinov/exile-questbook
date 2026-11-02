@@ -12,22 +12,29 @@
  */
 
 import type {
+  BlankLine,
+  CommentLine,
   MalformedLine,
   StatementLine,
   SyntaxLine,
-  TriviaLine,
 } from "./syntax.ts";
 
-/** A blank or comment line, carried so the file can be written back intact. */
-export interface Trivia {
-  readonly kind: "trivia";
-  readonly syntax: TriviaLine;
+/** A line holding nothing but whitespace. */
+export interface Blank {
+  readonly kind: "blank";
+  readonly syntax: BlankLine;
+}
+
+/** A line holding nothing but a comment. */
+export interface Comment {
+  readonly kind: "comment";
+  readonly syntax: CommentLine;
 }
 
 /**
  * A line that could not be read as a statement.
  *
- * Kept so the file writes back intact, and kept separate from trivia so that
+ * Kept so the file writes back intact, and kept apart from comments so that
  * anything reasoning about the filter can tell a comment from a line the
  * player probably did not mean to write.
  */
@@ -74,7 +81,8 @@ export type BlockStatement =
   | Action
   | ContinueStatement
   | UnknownStatement
-  | Trivia
+  | Blank
+  | Comment
   | Malformed;
 
 /** A `Show`, `Hide` or `Minimal` block, with everything it contains. */
@@ -86,14 +94,19 @@ export interface Block {
 }
 
 /**
- * An item at the top level of the file: a block, or trivia before the first
- * block, or a statement that appears outside any block.
+ * An item at the top level of the file: a block, a line outside any block, or
+ * a statement that appears outside any block.
  */
-export type FilterItem = Block | Trivia | Malformed | UnknownStatement;
+export type FilterItem =
+  | Block
+  | Blank
+  | Comment
+  | Malformed
+  | UnknownStatement;
 
 /** A parsed loot filter. */
 export interface LootFilter {
   readonly items: readonly FilterItem[];
 }
 
-export type { SyntaxLine, StatementLine, TriviaLine, MalformedLine };
+export type { SyntaxLine, StatementLine, BlankLine, CommentLine, MalformedLine };

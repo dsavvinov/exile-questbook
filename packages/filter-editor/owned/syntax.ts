@@ -8,6 +8,11 @@
  *
  * Nothing here is interpreted. `Sockets >= 5GGG` is a keyword, an operator and
  * one token; what `5GGG` means belongs to the layer above.
+ *
+ * There is no category of insignificant line. Comments and blank lines carry
+ * no instruction to the game, but they carry the author's intent and the file's
+ * shape, and this app edits files other people wrote. Each kind of line is
+ * named for what it is.
  */
 
 /**
@@ -70,8 +75,7 @@ export interface MalformedLine {
   readonly eol: string;
 }
 
-/** Lines that carry no statement and no meaning: blanks and comments. */
-export type TriviaLine = BlankLine | CommentLine;
+
 
 /**
  * A line of the form `indent keyword [operator] value* trailing`.
@@ -90,4 +94,8 @@ export interface StatementLine {
   readonly eol: string;
 }
 
-export type SyntaxLine = TriviaLine | MalformedLine | StatementLine;
+export type SyntaxLine =
+  | BlankLine
+  | CommentLine
+  | MalformedLine
+  | StatementLine;

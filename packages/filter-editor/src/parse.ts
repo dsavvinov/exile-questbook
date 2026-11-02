@@ -27,7 +27,7 @@ function classify(line: StatementLine): BlockStatement {
 /**
  * Groups lines into blocks.
  *
- * Trivia reaching this point inside a block stays in that block. Comments in a
+ * A blank or comment line inside a block stays in that block. Comments in a
  * filter usually introduce the block below them, so attaching a run of trailing
  * comments to the block above is the wrong half of the time. It does not affect
  * writing the file back, but it will matter once presets are inserted between
@@ -55,9 +55,14 @@ export function parseLines(lines: readonly SyntaxLine[]): LootFilter {
       open = { header: line, statements: [] };
       continue;
     }
-    if (line.kind === "blank" || line.kind === "comment") {
-      if (open) open.statements.push({ kind: "trivia", syntax: line });
-      else items.push({ kind: "trivia", syntax: line });
+    if (line.kind === "blank") {
+      if (open) open.statements.push({ kind: "blank", syntax: line });
+      else items.push({ kind: "blank", syntax: line });
+      continue;
+    }
+    if (line.kind === "comment") {
+      if (open) open.statements.push({ kind: "comment", syntax: line });
+      else items.push({ kind: "comment", syntax: line });
       continue;
     }
     if (line.kind === "malformed") {
