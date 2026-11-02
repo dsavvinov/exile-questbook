@@ -21,7 +21,6 @@ export type {
   SyntaxLine,
   ValueToken,
 } from "./syntax.ts";
-export { isQuoted } from "./syntax.ts";
 
 export type {
   Action,

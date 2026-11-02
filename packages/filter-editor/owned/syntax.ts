@@ -34,11 +34,6 @@ export interface ValueToken {
   readonly text: string;
 }
 
-/** Whether a token was written in quotes. */
-export function isQuoted(value: ValueToken): boolean {
-  return value.openQuote !== null;
-}
-
 /** An operator exactly as it appeared. */
 export interface OperatorToken {
   /** Whitespace preceding the operator, verbatim. */
