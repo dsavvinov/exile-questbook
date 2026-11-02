@@ -27,9 +27,10 @@ it. Silence is not approval.
 
 ## Presenting work for review
 
-Review has two jobs. Do both, in this order, every time.
+Review has two steps, and the second does not begin until the user has accepted
+the first. Present one step per message.
 
-### 1. The file split
+### Step 1: the file split
 
 Run `bash scripts/review-files.sh`. It lists every changed file and puts it in
 the owned or the unowned group. The grouping is computed from the repository
@@ -49,10 +50,21 @@ all of them, never while writing them. Grouping as you go bends what you say
 about a file so that it fits a group. Grouping afterwards changes only how the
 summaries are presented, and it changes no meaning.
 
-### 2. The owned diffs
+Then stop, and wait.
+
+### Step 2: the owned diffs
+
+Only once the user has accepted step 1.
 
 Run `bash scripts/review-diff.sh`. Present every diff it returns, in full. This
 is the material the user actually reviews, so it is not summarised.
+
+### Why the steps are separate
+
+A correction at step 1 usually changes what the diffs should be: a file in the
+wrong group has to move, and work that should not have been done at all has to
+be undone. Diffs produced before that correction are thrown away. They are also
+long, and putting them next to the file list makes both harder to read.
 
 ### Render it yourself
 
