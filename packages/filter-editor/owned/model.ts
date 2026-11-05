@@ -149,6 +149,19 @@ export class LootFilter {
    * - `Import` is not resolved. It becomes an `UnknownStatement` and is written
    *   back untouched, so a filter that imports others is read as the single
    *   file it is, not as the filter the game would assemble.
+   *
+   * Critical inputs and outputs:
+   *
+   * - The published filters under `testdata/` are the critical inputs. They
+   *   are real files from two unrelated authors, around 28,000 lines in all.
+   *   They arise because GGG publishes no grammar: a filter the game accepts
+   *   is the only evidence that this parser reads the format correctly, and
+   *   the documentation is not that evidence.
+   * - Each of them produces no `Malformed` line, no `UnknownStatement`, and
+   *   renders back identical to its source. Either of the first two appearing
+   *   in a published filter is a defect here, not in the filter.
+   * - "Parses without errors" says nothing on its own, because parsing never
+   *   fails. Those three properties are what carries the information.
    */
   static parse(source: string): LootFilter {
     return parseFilter(source);

@@ -51,7 +51,9 @@ Attached to the declarations in `owned/`.
 
 ## Critical inputs and outputs
 
-Not specified yet.
+On `LootFilter.parse` in `owned/model.ts`. The inputs are the published filters
+under `testdata/`, and the outputs are the properties each of them must have
+when parsed.
 
 ## Encoding is the caller's problem
 
